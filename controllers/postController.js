@@ -9,27 +9,29 @@ const { threadId } = require("worker_threads");
 
 // INDEX
 async function index(req, res) {
-  const { published } = req.query;
-  log(published);
-  if (published) {
-    const data = await prisma.post.findMany({
-      where: {
-        published: true,
+  const filters = {};
+  const { published, string } = req.query;
+  if (string) {
+    filters.OR = [
+      {
+        title: { contains: string },
       },
-    });
-    if (!data) {
-      throw new PrismaExeption("Qualcosa è andato storto, riprova", 500);
-    }
-
-    return res.json(data);
-  } else {
-    const data = await prisma.post.findMany();
-    if (!data) {
-      throw new PrismaExeption("Qualcosa è andato storto, riprova", 500);
-    }
-
-    return res.json(data);
+      {
+        content: { contains: string },
+      },
+    ];
   }
+  if (published) {
+    filters.published = published === "true";
+  }
+  const data = await prisma.post.findMany({
+    where: filters,
+  });
+  if (!data) {
+    throw new PrismaExeption("Qualcosa è andato storto, riprova", 500);
+  }
+
+  return res.json(data);
 }
 
 // SHOW (SLUG)
@@ -64,6 +66,7 @@ async function store(req, res) {
       slug: slugControl(postToCreate.title, list),
       image: postToCreate.image,
       content: postToCreate.content,
+      published: postToCreate.published,
     },
   });
 

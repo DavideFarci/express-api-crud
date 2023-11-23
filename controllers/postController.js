@@ -1,9 +1,15 @@
 const { log } = require("console");
 const fs = require("fs");
 const path = require("path");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 // INDEX
-function index(req, res) {}
+async function index(req, res) {
+  const data = await prisma.post.findMany();
+
+  return res.json(data);
+}
 
 // SHOW (SLUG)
 function show(req, res) {}

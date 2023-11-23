@@ -26,10 +26,11 @@ async function show(req, res) {
 // STORE
 async function store(req, res) {
   const postToCreate = req.body;
+  const list = await prisma.post.findMany();
   const newPost = await prisma.post.create({
     data: {
       title: postToCreate.title,
-      slug: postToCreate.title.toLowerCase().trim().replaceAll(" ", "-"),
+      slug: slugControl(postToCreate.title, list),
       image: postToCreate.image,
       content: postToCreate.content,
     },

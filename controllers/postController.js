@@ -12,7 +12,16 @@ async function index(req, res) {
 }
 
 // SHOW (SLUG)
-function show(req, res) {}
+async function show(req, res) {
+  const { slug } = req.params;
+  const data = await prisma.post.findFirst({
+    where: {
+      slug: slug,
+    },
+  });
+
+  return res.json(data);
+}
 
 // STORE
 function store(req, res) {}

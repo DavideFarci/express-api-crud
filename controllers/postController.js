@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-
+const { slugControl } = require("../Utilities/functions");
 // INDEX
 async function index(req, res) {
   const data = await prisma.post.findMany();
@@ -39,7 +39,27 @@ async function store(req, res) {
 }
 
 // UPDATE
-function update(req, res) {}
+async function update(req, res) {
+  const { slug } = req.params;
+  const postToUpdate = req.body;
+  const list = await prisma.post.findMany();
+  const postUpdated = await prisma.post.update({
+    where: {
+      slug: slug,
+    },
+    data: {
+      title: postToUpdate.title,
+      slug: slugControl(postToUpdate.title, list),
+      image: postToUpdate.image,
+      content: postToUpdate.content,
+    },
+  });
+
+  res.json({
+    message: `Il post ${postToUpdate.title} è stato modificato:`,
+    postUpdated,
+  });
+}
 
 // DESTROY
 function destroy(req, res) {}

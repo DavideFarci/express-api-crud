@@ -9,12 +9,27 @@ const { threadId } = require("worker_threads");
 
 // INDEX
 async function index(req, res) {
-  const data = await prisma.post.findMany();
-  if (!data) {
-    throw new PrismaExeption("Qualcosa è andato storto, riprova", 500);
-  }
+  const { published } = req.query;
+  log(published);
+  if (published) {
+    const data = await prisma.post.findMany({
+      where: {
+        published: true,
+      },
+    });
+    if (!data) {
+      throw new PrismaExeption("Qualcosa è andato storto, riprova", 500);
+    }
 
-  return res.json(data);
+    return res.json(data);
+  } else {
+    const data = await prisma.post.findMany();
+    if (!data) {
+      throw new PrismaExeption("Qualcosa è andato storto, riprova", 500);
+    }
+
+    return res.json(data);
+  }
 }
 
 // SHOW (SLUG)

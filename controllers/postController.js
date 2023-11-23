@@ -24,7 +24,19 @@ async function show(req, res) {
 }
 
 // STORE
-function store(req, res) {}
+async function store(req, res) {
+  const postToCreate = req.body;
+  const newPost = await prisma.post.create({
+    data: {
+      title: postToCreate.title,
+      slug: postToCreate.title.toLowerCase().trim().replaceAll(" ", "-"),
+      image: postToCreate.image,
+      content: postToCreate.content,
+    },
+  });
+
+  return res.json(newPost);
+}
 
 // UPDATE
 function update(req, res) {}
